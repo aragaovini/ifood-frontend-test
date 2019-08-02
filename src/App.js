@@ -1,6 +1,5 @@
 import React from 'react';
 import './assets/css/App.css';
-import { requireLogin } from './auth/spotify'
 import { getFeaturedPlaylist } from './services'
 
 class App extends React.Component {
@@ -15,12 +14,11 @@ class App extends React.Component {
         playlists: data.playlists.items
       })
     } catch(error) {
-      throw new Error('Unable to get featured playlist')
+      console.error('Unable to get featured playlist')
     }
   }
 
   componentDidMount() {
-    requireLogin()
     this.getPlaylist()
   }
 

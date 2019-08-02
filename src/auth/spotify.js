@@ -12,23 +12,25 @@ const verifyParams = () => {
         localStorage.setItem('token', access_token)
 }
 
-const hasToken = () => localStorage.getItem('token')
+const getToken = () => localStorage.getItem('token')
 
-
-const requireLogin = () => {
-    verifyParams()
-    if (!hasToken()) {
-        const scopes = 'user-read-private user-read-email'
-        const url = `${SPOTIFY_URL_AUTHORIZE}
-        ?response_type=token
-        &client_id=${CLIENT_ID}
-        &scope=${encodeURIComponent(scopes)}
-        &redirect_uri=${encodeURIComponent(CURRENT_URL)}`
-        
-        window.location.href = url
-    }
+const verifyLogin = () => {
+    return new Promise((accept, reject) => {
+        verifyParams()
+        const token = getToken()
+        if (!token) {
+            const scopes = 'user-read-private user-read-email'
+            const url = `${SPOTIFY_URL_AUTHORIZE}?response_type=token&client_id=${CLIENT_ID}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(CURRENT_URL)}`
+            
+            window.location.href = url
+            reject()
+        } else {
+            accept()
+        }
+    })
 }
 
 export {
-    requireLogin
+    verifyLogin,
+    getToken
 }
