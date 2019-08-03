@@ -2,9 +2,11 @@ const queryString = require('query-string')
 
 const SPOTIFY_URL_AUTHORIZE = 'https://accounts.spotify.com/authorize'
 const CLIENT_ID = '5b444b2c79c34c7c99b4c8e2db1d32dd'
-
 const CURRENT_URL = `http://localhost:3000`
 
+const getToken = () => localStorage.getItem('token')
+
+const resetToken = () => localStorage.removeItem('token')
 
 const verifyParams = () => {
     const { access_token } = queryString.parse(window.location.hash)
@@ -12,7 +14,7 @@ const verifyParams = () => {
         localStorage.setItem('token', access_token)
 }
 
-const getToken = () => localStorage.getItem('token')
+
 
 const verifyLogin = () => {
     return new Promise((accept, reject) => {
@@ -32,5 +34,6 @@ const verifyLogin = () => {
 
 export {
     verifyLogin,
-    getToken
+    getToken,
+    resetToken
 }

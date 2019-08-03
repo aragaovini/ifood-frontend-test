@@ -1,5 +1,9 @@
 import axios from 'axios'
-import { verifyLogin, getToken } from '../auth/spotify'
+import { 
+    verifyLogin, 
+    getToken, 
+    resetToken
+} from '../auth/spotify'
 
 const api = axios.create({
     baseURL: 'https://api.spotify.com/v1/browse'
@@ -17,7 +21,9 @@ api.interceptors.request.use(async config => {
   });
 
 api.interceptors.response.use(undefined, err => {
-    if (err.response.status === 401 && getToken()) {
+    const token = getToken()
+    if (err.response.status === 401 && token) {
+        resetToken()
         verifyLogin()
     }
   })
