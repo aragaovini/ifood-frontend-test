@@ -2,6 +2,7 @@ import React from 'react';
 import './assets/css/App.css';
 import { getFeaturedPlaylist } from './services/spotify'
 import getFilters from './services/filters'
+import List from './components/List'
 
 class App extends React.Component {
   state = {
@@ -35,7 +36,7 @@ class App extends React.Component {
           Spotifood
           <div>Filters: { filters && filters.map(filter => (<h1>{ filter.name }</h1>)) }</div>
           <div>
-            { playlists && playlists.map(playlist => <h3>{playlist.name}</h3>) }
+            <List items={playlists} />
           </div>
         </header>
         
