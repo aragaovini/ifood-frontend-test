@@ -9,31 +9,22 @@ class App extends React.Component {
     filters: []
   }
 
-  async getPlaylist() {
-    try {
-      const { data: { playlists } } = await getFeaturedPlaylist()
-      this.setState({
-        playlists: playlists.items
-      })
-    } catch(error) {
-      console.error('Unable to get featured playlist')
-    }
-  }
-
-  async getFilters() {
+  async getData() {
     try {
       const { data: { filters } } = await getFilters()
+      const { data: { playlists: { items } } } = await getFeaturedPlaylist()
+
       this.setState({
-        filters
+        filters,
+        playlists: items
       })
-    } catch(error) {
-      console.error('Unable to get filters')
+    } catch (error) {
+      console.error('Unable to get data to show spotify playlist')
     }
   }
 
   componentDidMount() {
-    this.getPlaylist()
-    this.getFilters()
+    this.getData()
   }
 
   render() {
