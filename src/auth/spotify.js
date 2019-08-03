@@ -14,8 +14,6 @@ const verifyParams = () => {
         localStorage.setItem('token', access_token)
 }
 
-
-
 const verifyLogin = () => {
     return new Promise((accept, reject) => {
         verifyParams()

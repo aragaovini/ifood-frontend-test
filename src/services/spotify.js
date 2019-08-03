@@ -5,11 +5,11 @@ import {
     resetToken
 } from '../auth/spotify'
 
-const api = axios.create({
+const spotifyApi = axios.create({
     baseURL: 'https://api.spotify.com/v1/browse'
 })
 
-api.interceptors.request.use(async config => {
+spotifyApi.interceptors.request.use(async config => {
     try {
         await verifyLogin()
         const token = getToken()
@@ -20,7 +20,7 @@ api.interceptors.request.use(async config => {
     }
   });
 
-api.interceptors.response.use(undefined, err => {
+  spotifyApi.interceptors.response.use(undefined, err => {
     const token = getToken()
     if (err.response.status === 401 && token) {
         resetToken()
@@ -28,9 +28,8 @@ api.interceptors.response.use(undefined, err => {
     }
   })
 
-
 const getFeaturedPlaylist = () => {
-    return api.get('featured-playlists')
+    return spotifyApi.get('featured-playlists')
 }
 
 export {
