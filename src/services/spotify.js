@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { 
-    verifyLogin, 
+    verifyLogin,
+    verifyParams,
     getToken, 
     resetToken
 } from '../auth/spotify'
@@ -11,7 +12,7 @@ const spotifyApi = axios.create({
 
 spotifyApi.interceptors.request.use(async config => {
     try {
-        await verifyLogin()
+        verifyParams()
         const token = getToken()
         config.headers['Authorization'] = `Bearer ${token}`;
         return config;
