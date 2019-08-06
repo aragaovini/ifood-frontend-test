@@ -4,12 +4,32 @@ import { Form } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
+import styled from 'styled-components';
 
 class Filter extends Component {
 
     state = {
         handleChange: () => {}
     }
+
+    DatePickerBox = styled.div`
+        display: flex;
+        flex-direction: column;
+        .react-datepicker__input-container input {
+            height: calc(1.5em + .75rem + 2px);
+            padding: .375rem .75rem;
+            font-size: 1rem;
+            font-weight: 400;
+            outline: none;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: .25rem;
+            transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        }
+    `
 
     componentWillReceiveProps({ handleFieldsChange }) {
         if (handleFieldsChange) {
@@ -41,7 +61,7 @@ class Filter extends Component {
 
     render() {
         const { filters } = this.props
-        const { handleChange } = this
+        const { handleChange, DatePickerBox } = this
         return (
             <Form>
                 {filters && filters.map(filter => {
@@ -66,15 +86,17 @@ class Filter extends Component {
                     } else {
                         if (validation && validation.entityType === 'DATE_TIME') {
                             return (
-                                <DatePicker
-                                    key={filter.id}
-                                    selected={this.state[id]}
-                                    onChange={(value) => this.handleDate(id, value, validation.pattern)}
-                                    showTimeSelect
-                                    timeIntervals={15}
-                                    dateFormat="MMMM d, yyyy h:mm aa"
-                                    timeCaption="time"
-                                    timeFormat="HH:mm"/>
+                                <DatePickerBox key={filter.id}>
+                                    <label>{name}</label>
+                                    <DatePicker
+                                        selected={this.state[id]}
+                                        onChange={(value) => this.handleDate(id, value, validation.pattern)}
+                                        showTimeSelect
+                                        timeIntervals={15}
+                                        dateFormat="MMMM d, yyyy h:mm aa"
+                                        timeCaption="time"
+                                        timeFormat="HH:mm"/>
+                                </DatePickerBox>
                             )
                         } else {
                             return (
