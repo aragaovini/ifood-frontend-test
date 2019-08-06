@@ -20,6 +20,11 @@ class Filter extends Component {
     }
 
     handleChange = (field, value, formattedValue) => {
+        if (field === 'country' && value.includes('_')) {
+            // Country USA is coming as 'en_US and Spotify API doesnt accept it'
+            value = value.split('_')[1]
+        }
+
         this.setState({
             [field]: value
         })
@@ -49,11 +54,11 @@ class Filter extends Component {
 
                     if (filter.values) {
                         return (
-                            <Form.Group controlId="formBasicEmail">
+                            <Form.Group key={filter.id} controlId="formBasicEmail">
                                 <Form.Label>{name}</Form.Label>
                                 <Form.Control as="select" onChange={e => handleChange(id, e.target.value)}>
-                                    {values && values.map(value => (
-                                        <option value={value.value}>{value.name}</option>
+                                    {values && values.map((value, index) => (
+                                        <option key={index} value={value.value}>{value.name}</option>
                                     ))}
                                 </Form.Control>
                             </Form.Group>
@@ -62,6 +67,7 @@ class Filter extends Component {
                         if (validation && validation.entityType === 'DATE_TIME') {
                             return (
                                 <DatePicker
+                                    key={filter.id}
                                     selected={this.state[id]}
                                     onChange={(value) => this.handleDate(id, value, validation.pattern)}
                                     showTimeSelect
@@ -72,7 +78,7 @@ class Filter extends Component {
                             )
                         } else {
                             return (
-                                <Form.Group>
+                                <Form.Group key={filter.id}>
                                     <Form.Label>{name}</Form.Label>
                                     <Form.Control onChange={(e) => handleChange(id, e.target.value)}></Form.Control>
                                 </Form.Group>

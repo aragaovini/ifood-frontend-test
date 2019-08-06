@@ -45,8 +45,8 @@ const List = ({ items }) => {
     return (
         <Container>
             <Row>
-                { items.map(({ name, images, external_urls }) => (
-                    <Col>
+                { items.map(({ name, images, external_urls }, index) => (
+                    <Col key={index}>
                         <ListItem onClick={() => goToPlaylist(external_urls)}>
                             <PlaylistImage 
                                 className="playlist-image" 
