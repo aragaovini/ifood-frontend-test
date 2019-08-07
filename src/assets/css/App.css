@@ -16,3 +16,29 @@
 body {
   margin: 0;
 }
+
+label {
+  font-size: 14px;
+  text-align: left;
+}
+
+input, select {
+  min-height: 20px;
+  padding: 2px;
+  height: 28px !important;
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: 0px;
+  text-align: left;
+}
+
+.form-box {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  width: 100%;
+  grid-gap: 32px;
+  padding: 28px;
+  align-items: baseline;
+}

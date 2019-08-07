@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import {
     Container,
     Row,
-    Col
+    Col,
+    Pagination
 } from 'react-bootstrap'
 
 const hoveredImageStyle = `
@@ -39,16 +40,71 @@ const PlaylistName = styled.h3`
     }
 `
 
-const goToPlaylist = urls => window.location = urls.spotify
+class List extends Component {
+    state = {
+        limit: 1,
+        offset: 0,
+        total: 0,
+        pages: 0,
+        items: []
+    }
 
-const List = ({ items }) => {
-    return (
+    componentWillReceiveProps({ items, limit, total }) {
+        this.setState({
+            items,
+            limit,
+            total
+        }, () => {
+            this.calculatePagination()
+        })
+    }
+
+    goToPlaylist = urls => window.location = urls.spotify
+
+    calculatePagination = () => {
+        const { limit, total } = this.state
+        
+        const pages = Math.ceil(total / (limit ? Number(limit) : 1))
+        this.setState({
+            pages
+        })
+    }
+
+    changePage = (page) => {
+        const { handlePageChange } = this.props
+        const { limit } = this.state
+        const offset = (page - 1) * limit
+
+        handlePageChange(offset)
+    }
+
+    render() {
+        const { items, pages } = this.state
+
+        const PagesComponent = () => {
+            let pageItems = []
+            if (pages > 1) {
+                for(let page = 1; page <= pages; page++) {
+                    pageItems.push(
+                        <Pagination.Item 
+                            onClick={() => this.changePage(page)}
+                            key={page}>
+                            {page}
+                        </Pagination.Item>
+                    )
+                }
+            }
+            return pageItems
+        }
+
+        return (
         <Container>
             <Row>
                 { items.map(({ name, images, external_urls }, index) => (
                     <Col key={index}>
-                        <ListItem onClick={() => goToPlaylist(external_urls)}>
-                            <PlaylistImage 
+                        <ListItem title={`Go to ${name}`} onClick={() => this.goToPlaylist(external_urls)}>
+                            <PlaylistImage
+                                alt={`${name} playlist`}
                                 className="playlist-image" 
                                 src={images[0].url}
                             />
@@ -56,11 +112,14 @@ const List = ({ items }) => {
                         </ListItem>
                     </Col>
                 ))}
-                
             </Row>
-        
+
+            <Pagination>
+                <PagesComponent/>
+            </Pagination>
         </Container>
-    )
+        )
+    }
 }
 
 List.propTypes = {

@@ -9,7 +9,10 @@ class App extends React.Component {
   state = {
     playlists: [],
     filters: [],
-    query: {}
+    query: {},
+    limit: 0,
+    total: 0,
+    offset: 0
   }
 
   async getData() {
@@ -17,12 +20,9 @@ class App extends React.Component {
       const { data: { filters } } = await getFilters()
       const { data: { playlists: { items } } } = await getFeaturedPlaylist()
 
-      let query = {}
-
       this.setState({
         filters,
-        playlists: items,
-        query
+        playlists: items
       })
     } catch (error) {
       console.error('Unable to get data to show spotify playlist')
@@ -43,9 +43,11 @@ class App extends React.Component {
   async getFilteredPlaylists() {
     try {
       const { query } = this.state
-      const { data: { playlists: { items } } } = await getFeaturedPlaylist(query)
+      const { data: { playlists } } = await getFeaturedPlaylist(query)
       this.setState({
-        playlists: items
+        playlists: playlists.items,
+        limit: query.limit,
+        total: playlists.total
       })
     } catch(error) {
       console.error(`Enable to get filtered playlists`)
@@ -56,15 +58,24 @@ class App extends React.Component {
     this.getData()
   }
 
+  handlePagination(offset) {
+    this.setState({
+      query: {
+        ...this.state.query,
+        offset
+      }
+    }, () => this.getFilteredPlaylists())
+  }
+
   render() {
-    const { playlists, filters } = this.state
+    const { playlists, filters, limit, total } = this.state
     return (
       <div className="App">
         <header className="App-header">
           Spotifood
           <Filter filters={filters} handleFieldsChange={(field, value) => this.handleFieldsValues(field, value)}/>
           <div>
-            <List items={playlists} />
+            <List limit={limit} total={total} items={playlists} handlePageChange={(offset) => this.handlePagination(offset)} />
           </div>
         </header>
         
