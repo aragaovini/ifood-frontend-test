@@ -24,6 +24,10 @@ spotifyApi.interceptors.request.use(async config => {
   spotifyApi.interceptors.response.use(undefined, err => {
     if (err.response.status === 401) {
         verifyLogin()
+    } else if (err.response && err.response.data && err.response.data.error) {
+        throw err.response.data.error.message
+    } else {
+        throw err
     }
   })
 

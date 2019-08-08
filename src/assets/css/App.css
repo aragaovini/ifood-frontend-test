@@ -11,6 +11,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  padding: 28px;
 }
 
 body {
@@ -48,4 +49,11 @@ input, select {
 
 .selected-page a {
   background: #d9eff3;
+}
+
+.toast-message {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  color: #ce2929;
 }

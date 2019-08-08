@@ -4,6 +4,7 @@ import { getFeaturedPlaylist } from './services/spotify'
 import getFilters from './services/filters'
 import List from './components/List'
 import Filter from './components/Filter/Filter'
+import { Toast } from 'react-bootstrap'
 
 class App extends React.Component {
   state = {
@@ -13,7 +14,16 @@ class App extends React.Component {
     limit: 0,
     total: 0,
     mustResetPagination: true,
-    intervalUpatePlaylists: () => {}
+    intervalUpatePlaylists: () => {},
+    errorMessage: ''
+  }
+
+  showToast = errorMessage => {
+    this.setState({ errorMessage}, () => {
+      setTimeout(() => {
+        this.setState({ errorMessage: '' })
+      }, 5000)
+    })
   }
 
   async getData() {
@@ -62,7 +72,7 @@ class App extends React.Component {
         intervalUpatePlaylists: intervalMethod
       })
     } catch(error) {
-      console.error(`Enable to get filtered playlists`)
+      this.showToast(`Unable to get playlists: ${error.message || error}`)
     }
   }
 
@@ -71,11 +81,18 @@ class App extends React.Component {
   }
 
   render() {
-    const { playlists, filters, limit, total, mustResetPagination } = this.state
+    const { 
+      playlists, 
+      filters, 
+      limit, 
+      total, 
+      mustResetPagination,
+      errorMessage
+    } = this.state
     return (
       <div className="App">
         <header className="App-header">
-          Spotifood
+          <h1>Spotifood</h1>
           <Filter 
             filters={filters} 
             handleFieldsChange={(field, value) => this.handleFieldsValues(field, value)}/>
@@ -88,6 +105,9 @@ class App extends React.Component {
               handlePageChange={(offset) => this.handlePagination(offset)} />
           </div>
         </header>
+        <Toast className="toast-message" show={!!errorMessage}>
+          <Toast.Body>{ errorMessage }</Toast.Body>
+        </Toast>
       </div>
     );
   }
