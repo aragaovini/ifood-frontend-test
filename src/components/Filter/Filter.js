@@ -44,14 +44,6 @@ class Filter extends Component {
                 handleFieldsChange
             })
         }
-        filters.map(filter => {
-            if (this.state[filter.id] === undefined) {
-                this.setState({
-                    [filter.id]: undefined
-                })
-            }
-            return filter
-        })
     }
 
     handleChange = ({id: field, validation }, value, formattedValue) => {
