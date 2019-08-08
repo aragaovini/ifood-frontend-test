@@ -12,18 +12,17 @@ class App extends React.Component {
     query: {},
     limit: 0,
     total: 0,
-    mustResetPagination: true
+    mustResetPagination: true,
+    intervalUpatePlaylists: () => {}
   }
 
   async getData() {
     try {
       const { data: { filters } } = await getFilters()
-      const { data: { playlists: { items } } } = await getFeaturedPlaylist()
-      
       this.setState({
-        filters,
-        playlists: items
+        filters
       })
+      this.getPlaylists()
     } catch (error) {
       console.error('Unable to get data to show spotify playlist')
     }
@@ -36,25 +35,31 @@ class App extends React.Component {
         [field]:value
       }
     }, () => {
-      this.getFilteredPlaylists()
+      this.getPlaylists()
     })
   }
 
-  async getFilteredPlaylists() {
+  handlePagination(offset) {
+    this.getPlaylists(offset)
+  }
+
+  async getPlaylists(offset = 0) {
     try {
-      const { query } = this.state
+      let { query, intervalUpatePlaylists } = this.state
+
+      query = { ...query, offset }
       const { data: { playlists } } = await getFeaturedPlaylist(query)
       const mustResetPagination = !playlists.offset
+
+      clearInterval(intervalUpatePlaylists)
+      const intervalMethod = setInterval(() => { this.getPlaylists() }, 30000);
 
       this.setState({
         playlists: playlists.items,
         limit: query.limit,
         total: playlists.total,
         mustResetPagination,
-        query: {
-          ...this.state.query,
-          offset: 0
-        }
+        intervalUpatePlaylists: intervalMethod
       })
     } catch(error) {
       console.error(`Enable to get filtered playlists`)
@@ -63,16 +68,6 @@ class App extends React.Component {
 
   componentDidMount() {
     this.getData()
-  }
-
-  handlePagination(offset) {
-    this.setState({
-      query: {
-        ...this.state.query,
-        offset
-      },
-      mustResetPagination: false
-    }, () => this.getFilteredPlaylists())
   }
 
   render() {

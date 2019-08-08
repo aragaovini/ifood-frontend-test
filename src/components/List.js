@@ -43,8 +43,6 @@ const PlaylistName = styled.h3`
 class List extends Component {
     state = {
         limit: 1,
-        offset: 0,
-        total: 0,
         pages: 0,
         items: [],
         currentPage: 1
@@ -54,19 +52,17 @@ class List extends Component {
         this.setState({
             items,
             limit,
-            total,
             currentPage: mustResetPagination ? 1 : this.state.currentPage
         }, () => {
-            this.calculatePagination()
+            this.calculatePagination(total)
         })
     }
 
     goToPlaylist = urls => window.location = urls.spotify
 
-    calculatePagination = () => {
-        const { limit, total } = this.state
-        
-        const pages = Math.ceil(total / (limit ? limit : 1))
+    calculatePagination = total => {
+        const { limit } = this.state
+        const pages = Math.ceil(total / limit)
         this.setState({
             pages
         })
