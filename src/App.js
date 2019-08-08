@@ -47,7 +47,11 @@ class App extends React.Component {
       this.setState({
         playlists: playlists.items,
         limit: query.limit,
-        total: playlists.total
+        total: playlists.total,
+        query: {
+          ...this.state.query,
+          offset: 0
+        }
       })
     } catch(error) {
       console.error(`Enable to get filtered playlists`)
@@ -73,12 +77,17 @@ class App extends React.Component {
       <div className="App">
         <header className="App-header">
           Spotifood
-          <Filter filters={filters} handleFieldsChange={(field, value) => this.handleFieldsValues(field, value)}/>
+          <Filter 
+            filters={filters} 
+            handleFieldsChange={(field, value) => this.handleFieldsValues(field, value)}/>
           <div>
-            <List limit={limit} total={total} items={playlists} handlePageChange={(offset) => this.handlePagination(offset)} />
+            <List 
+              limit={limit} 
+              total={total} 
+              items={playlists} 
+              handlePageChange={(offset) => this.handlePagination(offset)} />
           </div>
         </header>
-        
       </div>
     );
   }

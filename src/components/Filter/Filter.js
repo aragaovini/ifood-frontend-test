@@ -7,12 +7,17 @@ import moment from 'moment';
 import styled from 'styled-components';
 
 class Filter extends Component {
-
     state = {
         handleChange: () => {}
     }
 
     DatePickerBox = styled.div`
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        label {
+            text-align: left;
+        }
         .react-datepicker__input-container {
             width: 100%;
             input {
@@ -31,14 +36,9 @@ class Filter extends Component {
                 transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
             }
         }
-        display: flex;
-        flex-direction: column;
-        label {
-            margin: 10px 0px 0px 0px;
-        }
     `
 
-    componentWillReceiveProps({ handleFieldsChange, filters }) {
+    componentWillReceiveProps({ handleFieldsChange }) {
         if (handleFieldsChange) {
             this.setState({
                 handleFieldsChange
@@ -48,6 +48,7 @@ class Filter extends Component {
 
     handleChange = ({id: field, validation }, value, formattedValue) => {
         if (validation && validation.primitiveType === 'INTEGER') {
+            value = Number(value)
             if (validation.min !== undefined && validation.max !== undefined) {
                 if (value < validation.min || value > validation.max) {
                     this.setState({
@@ -57,6 +58,7 @@ class Filter extends Component {
                 }
             }
         }
+
         // Country USA is coming as 'en_US' and Spotify API doesnt accept it
         if (field === 'country' && value.includes('_')) {
             value = value.split('_')[1]
@@ -113,7 +115,7 @@ class Filter extends Component {
 
                         if (filter.values) {
                             return (
-                                <Form.Group key={id} controlId="formBasicEmail">
+                                <Form.Group key={id}>
                                     <Form.Label>{name}</Form.Label>
                                     <Form.Control as="select" onChange={e => handleChange(filter, e.target.value)}>
                                         {values && values.map((value, index) => (
@@ -132,12 +134,12 @@ class Filter extends Component {
                                             onChange={(value) => this.handleDate(filter, value)}
                                             showTimeSelect
                                             timeIntervals={15}
-                                            dateFormat="MMMM d, yyyy h:mm aa"
+                                            dateFormat="MMMM d, yyyy h:mm"
                                             timeCaption="time"
                                             timeFormat="HH:mm"/>
                                     </DatePickerBox>
                                 )
-                            } else {
+                            } else if (id !== 'offset') {
                                 return (
                                     <Form.Group key={id}>
                                         <Form.Label>{name}</Form.Label>
@@ -147,6 +149,8 @@ class Filter extends Component {
                                             />
                                     </Form.Group>
                                 )
+                            } else {
+                                return null
                             }
                         }
                     })}

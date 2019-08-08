@@ -64,7 +64,7 @@ class List extends Component {
     calculatePagination = () => {
         const { limit, total } = this.state
         
-        const pages = Math.ceil(total / (limit ? Number(limit) : 1))
+        const pages = Math.ceil(total / (limit ? limit : 1))
         this.setState({
             pages
         })
@@ -74,7 +74,6 @@ class List extends Component {
         const { handlePageChange } = this.props
         const { limit } = this.state
         const offset = (page - 1) * limit
-
         handlePageChange(offset)
     }
 
@@ -123,7 +122,9 @@ class List extends Component {
 }
 
 List.propTypes = {
-    items: PropTypes.array
+    items: PropTypes.array,
+    limit: PropTypes.number,
+    total: PropTypes.number
 }
 
 export default List
