@@ -20,6 +20,7 @@ class Filter extends Component {
         }
         .react-datepicker__input-container {
             width: 100%;
+            display: flex;
             input {
                 width: 100%;
                 height: calc(1.5em + .75rem + 2px);
