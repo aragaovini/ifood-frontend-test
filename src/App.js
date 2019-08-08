@@ -12,14 +12,14 @@ class App extends React.Component {
     query: {},
     limit: 0,
     total: 0,
-    offset: 0
+    mustResetPagination: true
   }
 
   async getData() {
     try {
       const { data: { filters } } = await getFilters()
       const { data: { playlists: { items } } } = await getFeaturedPlaylist()
-
+      
       this.setState({
         filters,
         playlists: items
@@ -44,10 +44,13 @@ class App extends React.Component {
     try {
       const { query } = this.state
       const { data: { playlists } } = await getFeaturedPlaylist(query)
+      const mustResetPagination = !playlists.offset
+
       this.setState({
         playlists: playlists.items,
         limit: query.limit,
         total: playlists.total,
+        mustResetPagination,
         query: {
           ...this.state.query,
           offset: 0
@@ -67,12 +70,13 @@ class App extends React.Component {
       query: {
         ...this.state.query,
         offset
-      }
+      },
+      mustResetPagination: false
     }, () => this.getFilteredPlaylists())
   }
 
   render() {
-    const { playlists, filters, limit, total } = this.state
+    const { playlists, filters, limit, total, mustResetPagination } = this.state
     return (
       <div className="App">
         <header className="App-header">
@@ -84,7 +88,8 @@ class App extends React.Component {
             <List 
               limit={limit} 
               total={total} 
-              items={playlists} 
+              items={playlists}
+              mustResetPagination={mustResetPagination}
               handlePageChange={(offset) => this.handlePagination(offset)} />
           </div>
         </header>

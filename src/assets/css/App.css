@@ -41,3 +41,11 @@ input, select {
   grid-gap: 32px;
   padding: 28px;
 }
+
+.pagination {
+  justify-content: center;
+}
+
+.selected-page a {
+  background: #d9eff3;
+}

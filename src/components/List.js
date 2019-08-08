@@ -46,14 +46,16 @@ class List extends Component {
         offset: 0,
         total: 0,
         pages: 0,
-        items: []
+        items: [],
+        currentPage: 1
     }
 
-    componentWillReceiveProps({ items, limit, total }) {
+    componentWillReceiveProps({ items, limit, total, mustResetPagination }) {
         this.setState({
             items,
             limit,
-            total
+            total,
+            currentPage: mustResetPagination ? 1 : this.state.currentPage
         }, () => {
             this.calculatePagination()
         })
@@ -74,11 +76,13 @@ class List extends Component {
         const { handlePageChange } = this.props
         const { limit } = this.state
         const offset = (page - 1) * limit
-        handlePageChange(offset)
+        this.setState({ 
+            currentPage: page
+        }, () => handlePageChange(offset))
     }
 
     render() {
-        const { items, pages } = this.state
+        const { items, pages, currentPage } = this.state
 
         const PagesComponent = () => {
             let pageItems = []
@@ -86,6 +90,7 @@ class List extends Component {
                 for(let page = 1; page <= pages; page++) {
                     pageItems.push(
                         <Pagination.Item 
+                            className={currentPage === page ? 'selected-page' : ''}
                             onClick={() => this.changePage(page)}
                             key={page}>
                             {page}
@@ -124,7 +129,8 @@ class List extends Component {
 List.propTypes = {
     items: PropTypes.array,
     limit: PropTypes.number,
-    total: PropTypes.number
+    total: PropTypes.number,
+    mustResetPagination: PropTypes.bool
 }
 
 export default List
