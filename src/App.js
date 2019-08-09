@@ -2,8 +2,9 @@ import React from 'react';
 import './assets/css/App.css';
 import { getFeaturedPlaylist } from './services/spotify'
 import getFilters from './services/filters'
-import List from './components/List'
+import List from './components/List/List'
 import Filter from './components/Filter/Filter'
+import Loader from './components/Loader/Loader'
 import { Toast } from 'react-bootstrap'
 
 class App extends React.Component {
@@ -15,11 +16,12 @@ class App extends React.Component {
     total: 0,
     mustResetPagination: true,
     intervalUpatePlaylists: () => {},
-    errorMessage: ''
+    errorMessage: '',
+    isLoading: false
   }
 
   showToast = errorMessage => {
-    this.setState({ errorMessage}, () => {
+    this.setState({ errorMessage }, () => {
       setTimeout(() => {
         this.setState({ errorMessage: '' })
       }, 5000)
@@ -28,13 +30,18 @@ class App extends React.Component {
 
   async getData() {
     try {
+      this.setState({ isLoading: true })
       const { data: { filters } } = await getFilters()
+      await this.getPlaylists()
+
       this.setState({
-        filters
+        filters,
+        isLoading: false
       })
-      this.getPlaylists()
+      
     } catch (error) {
-      console.error('Unable to get data to show spotify playlist')
+      this.setState({ isLoading: false })
+      this.showToast('Unable to get data to show spotify playlist')
     }
   }
 
@@ -49,31 +56,48 @@ class App extends React.Component {
     })
   }
 
-  handlePagination(offset) {
-    this.getPlaylists(offset)
+  async handlePagination(offset) {
+    this.setState({
+      mustResetPagination: false
+    }, () => {
+      this.getPlaylists(offset)
+    })
   }
 
-  async getPlaylists(offset = 0) {
-    try {
-      let { query, intervalUpatePlaylists } = this.state
+  handleInterval() {
+    const { intervalUpatePlaylists } = this.state
+    clearInterval(intervalUpatePlaylists)
+    return setInterval(() => { this.getPlaylists() }, 30000);
+  }
 
-      query = { ...query, offset }
-      const { data: { playlists } } = await getFeaturedPlaylist(query)
-      const mustResetPagination = !playlists.offset
+  getPlaylists(offset = 0) {
+    return new Promise(async (accept, reject) => {
+      try {
+        let { query, isLoading } = this.state
 
-      clearInterval(intervalUpatePlaylists)
-      const intervalMethod = setInterval(() => { this.getPlaylists() }, 30000);
+        if (!isLoading) this.setState({ isLoading: true })
 
-      this.setState({
-        playlists: playlists.items,
-        limit: query.limit,
-        total: playlists.total,
-        mustResetPagination,
-        intervalUpatePlaylists: intervalMethod
-      })
-    } catch(error) {
-      this.showToast(`Unable to get playlists: ${error.message || error}`)
-    }
+        query = { ...query, offset }
+        const { data: { playlists } } = await getFeaturedPlaylist(query)
+        const mustResetPagination = !playlists.offset
+        const intervalMethod = this.handleInterval()
+
+        this.setState({
+          playlists: playlists.items,
+          limit: query.limit,
+          total: playlists.total,
+          mustResetPagination,
+          intervalUpatePlaylists: intervalMethod,
+          isLoading: false
+        }, () => {
+          accept()
+        })
+      } catch(error) {
+        this.showToast(`Unable to get playlists: ${error.message || error}`)
+        this.setState({ isLoading: false })
+        reject(error)
+      }
+    })
   }
 
   componentDidMount() {
@@ -87,10 +111,12 @@ class App extends React.Component {
       limit, 
       total, 
       mustResetPagination,
-      errorMessage
+      errorMessage,
+      isLoading
     } = this.state
     return (
       <div className="App">
+        { isLoading && <Loader/> }
         <header className="App-header">
           <h1>Spotifood</h1>
           <Filter 
