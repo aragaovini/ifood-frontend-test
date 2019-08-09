@@ -12,9 +12,9 @@ class App extends React.Component {
     playlists: [],
     filters: [],
     query: {},
+    offset: 0,
     limit: 0,
     total: 0,
-    mustResetPagination: true,
     intervalUpatePlaylists: () => {},
     errorMessage: '',
     isLoading: false
@@ -57,11 +57,7 @@ class App extends React.Component {
   }
 
   async handlePagination(offset) {
-    this.setState({
-      mustResetPagination: false
-    }, () => {
-      this.getPlaylists(offset)
-    })
+    this.getPlaylists(offset)
   }
 
   handleInterval() {
@@ -79,14 +75,13 @@ class App extends React.Component {
 
         query = { ...query, offset }
         const { data: { playlists } } = await getFeaturedPlaylist(query)
-        const mustResetPagination = !playlists.offset
         const intervalMethod = this.handleInterval()
 
         this.setState({
           playlists: playlists.items,
           limit: query.limit,
           total: playlists.total,
-          mustResetPagination,
+          offset: query.offset,
           intervalUpatePlaylists: intervalMethod,
           isLoading: false
         }, () => {
@@ -109,8 +104,8 @@ class App extends React.Component {
       playlists, 
       filters, 
       limit, 
-      total, 
-      mustResetPagination,
+      total,
+      offset,
       errorMessage,
       isLoading
     } = this.state
@@ -125,9 +120,9 @@ class App extends React.Component {
           <div>
             <List 
               limit={limit} 
-              total={total} 
+              total={total}
+              offset={offset}
               items={playlists}
-              mustResetPagination={mustResetPagination}
               handlePageChange={(offset) => this.handlePagination(offset)} />
           </div>
         </header>

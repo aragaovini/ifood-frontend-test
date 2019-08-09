@@ -44,41 +44,35 @@ class List extends Component {
     state = {
         limit: 1,
         pages: 0,
+        offset: 0,
         items: [],
-        currentPage: 1
+        mustResetPagination: true
     }
 
-    componentWillReceiveProps({ items, limit, total, mustResetPagination }) {
-        this.setState({
-            items,
+    static getDerivedStateFromProps({ items, limit, total, offset }) {
+        const pages = Math.ceil(total / limit)
+        return {
             limit,
-            currentPage: mustResetPagination ? 1 : this.state.currentPage
-        }, () => {
-            this.calculatePagination(total)
-        })
+            total,
+            items,
+            offset,
+            pages
+        }
     }
 
     goToPlaylist = urls => window.location = urls.spotify
-
-    calculatePagination = total => {
-        const { limit } = this.state
-        const pages = Math.ceil(total / limit)
-        this.setState({
-            pages
-        })
-    }
 
     changePage = (page) => {
         const { handlePageChange } = this.props
         const { limit } = this.state
         const offset = (page - 1) * limit
-        this.setState({ 
-            currentPage: page
-        }, () => handlePageChange(offset))
+
+        handlePageChange(offset)
     }
 
     render() {
-        const { items, pages, currentPage } = this.state
+        const { items, pages, offset, total, limit } = this.state
+        const currentPage = offset >= total ? -1 : parseInt(offset / limit) + 1
 
         const PagesComponent = () => {
             let pageItems = []
@@ -100,7 +94,7 @@ class List extends Component {
         return (
         <Container>
             <Row>
-                { items.map(({ name, images, external_urls }, index) => (
+                {items && items.map(({ name, images, external_urls }, index) => (
                     <Col key={index}>
                         <ListItem title={`Go to ${name}`} onClick={() => this.goToPlaylist(external_urls)}>
                             <PlaylistImage
