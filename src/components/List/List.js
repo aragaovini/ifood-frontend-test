@@ -100,7 +100,7 @@ class List extends Component {
                             <PlaylistImage
                                 alt={`${name} playlist`}
                                 className="playlist-image" 
-                                src={images[0].url}
+                                src={images && images[0].url}
                             />
                             <PlaylistName>{ name }</PlaylistName>
                         </ListItem>
