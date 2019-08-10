@@ -7,9 +7,7 @@ import moment from 'moment';
 import styled from 'styled-components';
 
 class Filter extends Component {
-    state = {
-        handleChange: () => {}
-    }
+    state = {}
 
     DatePickerBox = styled.div`
         display: flex;
@@ -39,14 +37,6 @@ class Filter extends Component {
         }
     `
 
-    componentWillReceiveProps({ handleFieldsChange }) {
-        if (handleFieldsChange) {
-            this.setState({
-                handleFieldsChange
-            })
-        }
-    }
-
     handleChange = ({id: field, validation }, value, formattedValue) => {
         if (validation && validation.primitiveType === 'INTEGER') {
             value = Number(value)
@@ -68,7 +58,7 @@ class Filter extends Component {
         this.setState({
             [field]: value
         }, () => {
-            this.state.handleFieldsChange(field, formattedValue ? formattedValue : value)
+            this.props.handleFieldsChange(field, formattedValue ? formattedValue : value)
         })
     }
 
@@ -163,7 +153,7 @@ class Filter extends Component {
 
 Filter.propTypes = {
     filters: PropTypes.array,
-    onChange: PropTypes.func
+    handleFieldsChange: PropTypes.func
 }
 
 export default Filter

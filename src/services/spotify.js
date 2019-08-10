@@ -17,7 +17,7 @@ spotifyApi.interceptors.request.use(async config => {
         config.headers['Authorization'] = `Bearer ${token}`;
         return config;
     } catch(error) {
-        console.log('Login validation failed.')
+        return config;
     }
   });
 
