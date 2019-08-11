@@ -78,7 +78,7 @@ describe('List component', () => {
     expect(handleInputChangeFunction.mock.calls.length).toBe(1);
   });
 
-  it('is field change function being calledd', () => {
+  it('is field change function being called', () => {
     const field = wrapper
       .find(FormGroup)
       .at(1)
